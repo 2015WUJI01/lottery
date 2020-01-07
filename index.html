@@ -1,183 +1,207 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cubing师大抽奖系统</title>
-    <!-- Styles -->
-    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/bulma.min.css">
+    <link rel="stylesheet" href="./css/fontawesome.min.css">
+    <link rel="stylesheet" href="./css/app.css">
 </head>
 <body>
 <div id="app">
-    <div class="container">
-        <div class="row text-center" style="margin-bottom: 20px;">
-            <div class="col-lg-2 col-lg-offset-0 col-md-2 col-md-offset-0 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
-                <h3>参与列表</h3>
-                <textarea id="players" rows="10" style="width: 100%;"></textarea>
-                <p class="text-muted">一行输入一个名字</p>
+    <section>
+        <header id="heading" class="level is-mobile">
+            <div class="level-item">
+                <p id="page-title" class="title is-3 is-4-mobile is-spaced"
+                   @click="toggle_settings">{{ settings.page_title }}</p>
+            </div>
+        </header>
 
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                               href="#collapseOne">
-                                快捷填充
-                            </a>
-                        </h4>
+        <!-- 设置窗口 -->
+        <div class="modal" :class="{'is-active': settings.visible}">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">设置</p>
+                    <button class="delete" aria-label="close"
+                            @click="toggle_settings"></button>
+                </header>
+
+                <section class="modal-card-body">
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label" for="setting-page-title">页面标题</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <p class="control">
+                                    <input id="setting-page-title" class="input" type="text"
+                                           v-model="settings.form.page_title">
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <div id="collapseOne" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-lg-12 col-lg-offset-0 col-md-12 col-md-offset-0 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">从</span>
-                                        <input id="Player_begin" type="text" class="form-control" placeholder="1">
-                                    </div><!-- input-group --><br>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">到</span>
-                                        <input id="Player_end" type="text" class="form-control" placeholder="20">
-                                    </div><!-- /input-group --><br>
-                                    <button id="autoWrite" class="btn btn-sm btn-primary btn-block" type="button" onclick="autoWrite()">
-                                        开始填充
+                </section>
+
+                <footer class="modal-card-foot is-pulled-right">
+                    <button class="button" @click="toggle_settings">取消</button>
+                    <button class="button is-success" @click="save_settings">保存</button>
+                </footer>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container is-fluid">
+            <div class="columns">
+                <div class="column is-3-tablet is-2-desktop is-offset-1-desktop">
+                    <div class="tile is-ancestor">
+                        <div class="tile is-vertical">
+                            <!-- 标题 -->
+                            <div class="tile is-parent">
+                                <div class="tile is-child">
+                                    <p class="subtitle has-text-centered">参与列表</p>
+                                </div>
+                            </div>
+                            <!-- 输入框 -->
+                            <div class="tile is-parent">
+                                <div class="tile is-child">
+                                    <div class="field">
+                                        <div class="control">
+                                        <textarea class="textarea is-small is-primary"
+                                                  v-model="textarea.value"
+                                                  :disabled="rolling.started"
+                                                  :placeholder="textarea.placeholder"
+                                                  rows="9"></textarea>
+                                        </div>
+                                        <p class="help has-text-centered">一行输入一个选项</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 快捷填充 -->
+                            <div class="tile is-parent">
+                                <div class="tile is-child">
+                                    <p class="subtitle has-text-centered">快捷填充</p>
+                                    <div class="field has-addons">
+                                        <p class="control is-expanded">
+                                            <input class="input is-small" type="text"
+                                                   placeholder="1"
+                                                   v-model.number="filling.start"
+                                                   :disabled="rolling.started">
+                                        </p>
+                                        <p class="control">
+                                            <a class="button is-small is-static"> ~ </a>
+                                        </p>
+                                        <p class="control is-expanded">
+                                            <input class="input is-small" type="text"
+                                                   placeholder="20"
+                                                   v-model.number="filling.end"
+                                                   :disabled="rolling.started">
+                                        </p>
+                                    </div>
+                                    <div class="field">
+                                        <button class="button is-small is-primary is-outlined is-fullwidth"
+                                                :class="{'is-loading':filling.status}"
+                                                :disabled="rolling.started"
+                                                @click="fill">
+                                            <span class="">
+                                                开始填充
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-6-tablet is-6-desktop">
+                    <div class="tile is-ancestor">
+                        <div class="tile is-vertical">
+                            <!-- 标题 -->
+                            <div class="tile is-parent">
+                                <div class="tile is-child">
+                                    <p class="subtitle has-text-centered">抽奖滚动栏
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- asd -->
+                            <div class="tile is-parent">
+                                <div class="tile is-child">
+                                    <div class="card has-background-light">
+                                        <div id="roll-container" class="card-content">
+                                            <p class="title is-1 has-text-dark has-text-centered">
+                                                <span>{{ rolling.content }}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- asd -->
+                            <div class="tile is-parent">
+                                <div class="tile is-child">
+                                    <button class="button is-fullwidth"
+                                            :class="{'is-primary':!rolling.status,'is-danger':rolling.status}"
+                                            @keypress.Enter="toggle_rolling"
+                                            @click="toggle_rolling">
+                                        <strong>{{ rolling.btn.msg }}</strong>
                                     </button>
                                 </div>
-                            </div><!-- /.row -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-3-tablet is-2-desktop">
+                    <div class="tile is-ancestor">
+                        <div class="tile is-vertical">
+                            <!-- 标题 -->
+                            <div class="tile is-parent">
+                                <div class="tile is-child">
+                                    <p class="subtitle has-text-centered">幸运儿</p>
+                                </div>
+                            </div>
+                            <!-- 中奖名单 -->
+                            <div class="tile is-parent">
+                                <div class="tile is-child">
+                                    <table class="table is-narrow is-hoverable is-fullwidth">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>中奖名单</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="(winner, index) in winners" :key="index">
+                                            <td>{{ index + 1 }}</td>
+                                            <td>{{ winner }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- Restart -->
+                            <div class="tile is-parent">
+                                <div class="tile is-child">
+                                    <div class="field has-text-centered">
+                                        <button class="button is-small is-danger is-outlined"
+                                                @click="restart">
+                                                <span class="">
+                                                    重新开始
+                                                </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8 col-lg-offset-0 col-md-8 col-md-offset-0 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
-                <h3 class="text-center">抽奖滚动栏</h3>
-                <div class="jumbotron">
-                    <h1 id="winner-name" class=" text-center display-3">点击下方按钮抽奖</h1>
-                </div>
-                <input id="start" class="btn btn-primary btn-block btn-lg" type="button" value="抽 奖" onclick="roll()">
-            </div>
-            <div class="col-lg-2 col-lg-offset-0 col-md-2 col-md-offset-0 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
-                <h3>中奖名单</h3>
-                
-                <div id="winning" class="table-responsive">
-                    <table class="table text-left table-condensed">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>中奖者</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-                <input id="resetRow" class="btn btn-danger float-right" type="button" value="重新开始"
-                       onclick="resetLuckyDraw()">
-            </div>
         </div>
-    </div>
+    </section>
 </div>
 
-<!-- Scripts -->
-<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-    <script>
-        var flag = false;
-        var haveplay = false;
-        var pos = -1;
-        var timer;
-        var canRow = new Array();
-
-        function changename() {
-            var text = $("#players").val();
-            var Arr = text.split("\n");
-            for (var i = 0; i < Arr.length; i++) {
-
-                if (Arr[canRow[i]] == '') {
-                    canRow.splice(i, 1);
-                    i--;
-                }
-            }
-            pos = Math.floor(Math.random() * canRow.length);
-            if (Arr.length == 0 || canRow.length == 0) {
-                $("#start").val("抽 奖");
-                clearInterval(timer);
-                flag = false;
-                $("#winner-name").html("全部抽完啦~");
-                $("#start").val('抽不动了！').removeClass('btn-warning').addClass('btn-primary');
-            }
-            else {
-                $("#winner-name").html(Arr[canRow[pos]]);
-            }
-        }
-
-        function delRows(therow) {
-            canRow.splice(therow, 1);
-
-        }
-
-        function roll() {
-            if (haveplay == false) {
-                if ($("#players").val() == '')
-                    return;
-                haveplay = true;
-                $("#onplayer").val($("#players").val());
-                $("#players").attr("readonly", "readonly");
-                canRow.splice(0, canRow.length);
-                var text = $("#players").val();
-                var Arr = text.split("\n");
-                for (var i = 0; i < Arr.length; i++) {
-                    canRow.push(i);
-                }
-            }
-
-            if (flag == false) {
-                flag = true;
-                timer = setInterval(changename, 50);
-                $("#start").val('停!').removeClass('btn-primary').addClass('btn-warning');
-                $("#autoWrite").addClass('disabled');
-            }
-            else {
-                $("#start").val('抽 奖').removeClass('btn-warning').addClass('btn-primary');
-                flag = false;
-                clearInterval(timer);
-                if ($("#winner-name").html() != '' && canRow.length != 0) {
-                    delRows(pos);
-                    var winnertext = $("#winning").val();
-                    // $("#winning").val(winnertext + $("#winner-name").html() + '\n');
-                    var count = $("#winning table tbody").children().length;
-                    // ++count;
-                    var td = "<tr><td>" + (++count) + "</td><td><b>" + $("#winner-name").html() + "</b></td></tr>"
-                    $("#winning table tbody").append(td);
-                }
-            }
-        }
-
-        function resetLuckyDraw() {
-            clearInterval(timer);
-            $("#winner-name").html("点击下方按钮抽奖");
-            $("#players").removeAttr("readonly");
-            $("#winning table tbody").empty();
-            haveplay = false;
-            $("#start").val('抽 奖').removeClass('btn-warning').addClass('btn-primary');
-            $("#autoWrite").removeClass('disabled');
-            flag=false;
-        }
-
-        //自动填充数字
-        function autoWrite() {
-            //清空输入框
-            $("#players").val('');
-            //获取快捷输入的值
-            var begin = $("#Player_begin").val();
-            var end = $("#Player_end").val();
-            //填充输入框
-            if (begin - 0 !== NaN && end - 0 !== NaN && begin - end <= 0) {
-                for (var i = begin; i <= end; i++) {
-                    var preVal = $("#players").val();
-                    $("#players").val(preVal + i + '\n');
-                }
-            }
-        }
-    </script>
+<script src="./js/vue.min.js"></script>
+<script src="./js/fontawesome.min.js"></script>
+<script src="./js/app.js"></script>
 </body>
 </html>

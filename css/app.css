@@ -1,0 +1,24 @@
+header#heading {
+    padding: 15px 0;
+    height: auto;
+    /*border-bottom: 1px solid #00b89c50;*/
+    box-shadow: 0 1px 4px lightgray;
+    margin-bottom: 20px;
+
+}
+
+header#heading p#page-title {
+    cursor: pointer;
+}
+
+#roll-container {
+    padding: 0;
+}
+#roll-container p {
+    text-align: justify-all;
+    display: flex;
+    min-height: 220px;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+}
