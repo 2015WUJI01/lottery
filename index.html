@@ -58,14 +58,15 @@
                 <div class="column is-3-tablet is-2-desktop is-offset-1-desktop">
                     <div class="tile is-ancestor">
                         <div class="tile is-vertical">
-                            <!-- 标题 -->
-                            <div class="tile is-parent">
+                            <!-- 参与列表 -->
+                            <div id="player_list" class="tile is-parent is-vertical">
+                                <!-- 标题 -->
                                 <div class="tile is-child">
-                                    <p class="subtitle has-text-centered">参与列表</p>
+                                    <p class="subtitle has-text-centered">
+                                        <span @click="textarea.value == '' ? textarea.value = textarea.placeholder : ''">参与列表</span>
+                                    </p>
                                 </div>
-                            </div>
-                            <!-- 输入框 -->
-                            <div class="tile is-parent">
+                                <!-- 输入框 -->
                                 <div class="tile is-child">
                                     <div class="field">
                                         <div class="control">

@@ -11,7 +11,8 @@ header#heading {
 
 }
 
-header#heading p#page-title {
+header#heading p#page-title,
+#player_list p.subtitle > span {
     cursor: pointer;
 }
 
