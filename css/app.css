@@ -26,3 +26,7 @@ header#heading p#page-title {
     align-items: center;
     justify-content: center;
 }
+
+footer.modal-card-foot, .modal-card-head {
+    justify-content: flex-end;
+}

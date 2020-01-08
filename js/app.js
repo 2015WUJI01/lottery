@@ -1,9 +1,9 @@
 var app = new Vue({
     el: '#app',
     data: {
-        textarea: {
-            value: '',
-            placeholder: '',
+        textarea: { // 参与列表文本域
+            value: '', // v-model 绑定值
+            placeholder: '', // 初始化时从 example 中随机获取一种
             example: [
                 "麻辣香锅\n担担面\n黄焖鸡米饭\n过桥米线\n麻辣烫\n泡面",
                 "饥荒\nKingdom Rush\n红色警戒\n魔兽争霸\n超级玛丽\n植物大战僵尸",
@@ -12,26 +12,24 @@ var app = new Vue({
                 "长笛\n架子鼓\n大提琴\n钢琴\n双排键\n手风琴",
             ],
         },
-        settings: {
-            page_title: 'Cubing师大抽奖系统',
-            visible: false,
+        settings: { // 设置相关
+            page_title: 'Cubing师大抽奖系统', // 页面标题，
+            visible: false, // 设置面板默认隐藏
             form: {
-                page_title: '',
+                page_title: '', // v-model 绑定值，设置面板中的表单，保存时覆盖 settings 值
             }
         },
         rolling: {
             reminder: [], // 剩余参与者
-            started: false, // 抽奖已经开始，禁用输入框
-            status: false, // 正在滚动
-            content: '点击下方按钮抽奖',
-            btn: {
-                msg: '抽 奖',
-            },
+            started: false, // 抽奖状态
+            status: false, // 滚动状态
+            content: '点击下方按钮抽奖', // 滚动栏内容
+            btn_msg: '抽 奖',
         },
         filling: {
             status: false,
-            start: 1,
-            end: 20,
+            start: null,
+            end: null,
         },
         timer: null,
         lucky_dog: null,
@@ -41,10 +39,10 @@ var app = new Vue({
         // 初始化随机范例
         random = Math.floor(Math.random() * this.textarea.example.length);
         this.textarea.placeholder = this.textarea.example[random];
-        console.log('初始化随机范例完成');
-        // 初始化标题名称
+
+        // 初始化页面标题
+        document.title = this.settings.form.page_title;
         this.settings.form.page_title = this.settings.page_title;
-        console.log('初始化设置完成');
     },
     methods: {
         /*
@@ -62,7 +60,7 @@ var app = new Vue({
             if (this.rolling.started) {
                 if (this.rolling.reminder.length === 0) {
                     this.rolling.content = '全部抽完啦~';
-                    this.rolling.btn.msg = '抽...抽不动了';
+                    this.rolling.btn_msg = '抽...抽不动了';
                     return;
                 }
             } else {
@@ -73,19 +71,25 @@ var app = new Vue({
             this.rolling.started = true; // 进入抽奖状态
             this.rolling.status = !this.rolling.status; // 进入滚动状态
             if (this.rolling.status) {
-                // 抽奖中
-                this.rolling.btn.msg = '停!';
-                // 启用定时器，随机显示参与者
-                this.timer = setInterval(this._change_name, 40);
+                this._rolling_start();
             } else {
-                // 停止抽奖
-                this.rolling.btn.msg = '抽 奖';
-                // 关闭定时器，结束抽奖
-                clearInterval(this.timer);
+                this._rolling_stop();
                 // 将幸运儿从余参与者中移除
                 this.winners.push(this.rolling.reminder[this.lucky_dog]);
                 this.rolling.reminder.splice(this.lucky_dog, 1);
             }
+        },
+        _rolling_start: function() {
+            // 抽奖中
+            this.rolling.btn_msg = '停!';
+            // 启用定时器，随机显示参与者
+            this.timer = setInterval(this._change_name, 40);
+        },
+        _rolling_stop: function() {
+            // 停止抽奖
+            this.rolling.btn_msg = '抽 奖';
+            // 关闭定时器，结束抽奖
+            clearInterval(this.timer);
         },
         _change_name: function() {
             this.lucky_dog = Math.floor(Math.random() * this.rolling.reminder.length);
@@ -116,11 +120,12 @@ var app = new Vue({
             this.settings.visible = false;
         },
         restart: function () {
+            this._rolling_stop();
             this.rolling.started = false;
+            this.rolling.status = false;
             this.winners = [];
             this.rolling.reminder = [];
             this.rolling.content = '点击下方按钮抽奖';
-            this.rolling.btn.msg = '抽 奖';
         },
     },
     computed: {

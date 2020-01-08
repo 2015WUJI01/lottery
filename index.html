@@ -44,7 +44,7 @@
                     </div>
                 </section>
 
-                <footer class="modal-card-foot is-pulled-right">
+                <footer class="modal-card-foot">
                     <button class="button" @click="toggle_settings">取消</button>
                     <button class="button is-success" @click="save_settings">保存</button>
                 </footer>
@@ -144,7 +144,7 @@
                                             :class="{'is-primary':!rolling.status,'is-danger':rolling.status}"
                                             @keypress.Enter="toggle_rolling"
                                             @click="toggle_rolling">
-                                        <strong>{{ rolling.btn.msg }}</strong>
+                                        <strong>{{ rolling.btn_msg }}</strong>
                                     </button>
                                 </div>
                             </div>
