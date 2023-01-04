@@ -39,8 +39,8 @@ var app = new Vue({
         },
         filling: {
             status: false,
-            start: null,
-            end: null,
+            start: '',
+            end: '',
         },
         timer: null,
         lucky_dog: null,
