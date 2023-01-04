@@ -13,6 +13,11 @@
     <section>
         <header id="heading" class="level is-mobile">
             <div class="level-item">
+                <!-- logo -->
+                <figure v-show="settings.logo_show" class="image" style="margin-right:10px;" @click="toggle_settings">
+                    <img :src="settings.logo_path":style="{maxHeight:'46px'}">
+                </figure>
+                <!-- 标题 -->
                 <p id="page-title" class="title is-3 is-4-mobile is-spaced"
                    @click="toggle_settings">{{ settings.page_title }}</p>
             </div>
@@ -28,6 +33,7 @@
                             @click="toggle_settings"></button>
                 </header>
 
+                <!-- 页面标题 -->
                 <section class="modal-card-body">
                     <div class="field is-horizontal">
                         <div class="field-label is-normal">
@@ -38,6 +44,61 @@
                                 <p class="control">
                                     <input id="setting-page-title" class="input" type="text"
                                            v-model="settings.form.page_title">
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 设置 logo -->
+                <section class="modal-card-body">
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">Logo</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <!-- tab 分栏 -->
+                                <div class="tabs is-fullwidth">
+                                    <ul>
+                                        <li :class='{"is-active":settings.form.logo_tab=="upload"}'
+                                            @click="_switch_settings_logo_tab('upload')"><a>上传</a></li>
+                                        <li :class='{"is-active":settings.form.logo_tab=="link"}'
+                                            @click="_switch_settings_logo_tab('link')"><a>链接</a></li>
+                                        <li :class='{"is-active":settings.form.logo_tab=="hidden"}'
+                                            @click="_switch_settings_logo_tab('hidden')"><a>隐藏</a></li>
+                                    </ul>
+                                </div>
+                                <!-- 链接 -->
+                                <p class="control" v-show='settings.form.logo_tab=="link"'>
+                                    <input id="setting-page-title" class="input" type="text" placeholder="输入 logo 图片地址"
+                                     v-model="settings.form.url_logo_path">
+                                </p>
+                                <!-- 上传 -->
+                                <div class="file is-normal is-boxed" v-show='settings.form.logo_tab=="upload"'>
+                                    <label class="file-label">
+                                        <input id="setting-page-logo" class="file-input" type="file" name="logo" @change="upload_logo">
+                                        <figure class="image">
+                                            <img :src="settings.form.upload_logo_path" style="width:100%; max-height:240px;">
+                                        </figure>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 设置滚动时间间隔 -->
+                <section class="modal-card-body">
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label" for="setting-page-title">滚动时间间隔<br><span style="font-size:14px;">（单位：ms）</span></label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <p class="control">
+                                    <input id="setting-page-title" class="input" type="text" placeholder="填写时间间隔，单位毫秒"
+                                        v-model="settings.form.rolling_interval">
                                 </p>
                             </div>
                         </div>
@@ -126,7 +187,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <!-- asd -->
+                            <!-- 滚动框 -->
                             <div class="tile is-parent">
                                 <div class="tile is-child">
                                     <div class="card has-background-light">
@@ -138,7 +199,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- asd -->
+                            <!-- 抽奖按钮 -->
                             <div class="tile is-parent">
                                 <div class="tile is-child">
                                     <button class="button is-fullwidth"

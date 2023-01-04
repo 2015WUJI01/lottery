@@ -15,9 +15,20 @@ var app = new Vue({
         settings: { // 设置相关
             page_title: 'Cubing师大抽奖系统', // 页面标题，
             visible: false, // 设置面板默认隐藏
+            logo_show: true, // logo 默认显示
+            logo_path: 'https://avatars.githubusercontent.com/u/31869999',
+            rolling_interval: 40,
             form: {
-                page_title: '', // v-model 绑定值，设置面板中的表单，保存时覆盖 settings 值
-            }
+                // form 中均为 v-model 绑定值，设置面板中的表单，保存时覆盖 settings 值
+                page_title: '',
+                // tab: link | upload | hidden
+                logo_tab: 'upload',
+                // 当 logo_tab == link 时使用
+                url_logo_path: '',
+                // 当 logo_tab == upload 时使用
+                upload_logo_path: '',
+                rolling_interval: 0,
+            },
         },
         rolling: {
             reminder: [], // 剩余参与者
@@ -43,6 +54,10 @@ var app = new Vue({
         // 初始化页面标题
         document.title = this.settings.form.page_title;
         this.settings.form.page_title = this.settings.page_title;
+        this.settings.form.rolling_interval = this.settings.rolling_interval;
+        // 初始化 logo
+        this.settings.form.url_logo_path = '';
+        this.settings.form.upload_logo_path = this.settings.logo_path;
     },
     methods: {
         /*
@@ -52,6 +67,20 @@ var app = new Vue({
             this.settings.visible = !this.settings.visible;
         },
 
+        /*
+        * 刷新 logo 显示或隐藏
+        */
+        refresh_logo: function () {
+            if (this.settings.form.logo_tab == 'link') {
+                this.settings.logo_show = true;
+                this.settings.logo_path = this.settings.form.url_logo_path;
+            } else if (this.settings.form.logo_tab == 'upload') {
+                this.settings.logo_show = true;
+                this.settings.logo_path = this.settings.form.upload_logo_path;
+            } else if (this.settings.form.logo_tab == 'hidden') {
+                this.settings.logo_show = false;
+            }
+        },
         /*
          * 开始或停止抽奖
          */
@@ -83,7 +112,7 @@ var app = new Vue({
             // 抽奖中
             this.rolling.btn_msg = '停!';
             // 启用定时器，随机显示参与者
-            this.timer = setInterval(this._change_name, 40);
+            this.timer = setInterval(this._change_name, this.settings.rolling_interval);
         },
         _rolling_stop: function() {
             // 停止抽奖
@@ -94,6 +123,17 @@ var app = new Vue({
         _change_name: function() {
             this.lucky_dog = Math.floor(Math.random() * this.rolling.reminder.length);
             this.rolling.content = this.rolling.reminder[this.lucky_dog];
+        },
+        /* 上传 logo */
+        upload_logo: function(event) {
+            let that = this
+            if (window.FileReader) {
+                let reader = new FileReader();
+                reader.readAsDataURL(event.target.files[0]);
+                reader.onloadend = function(e) {
+                    that.settings.form.upload_logo_path = e.target.result;
+                };
+            }
         },
         /* 快捷填充，只能填数字 */
         fill: function() {
@@ -114,9 +154,10 @@ var app = new Vue({
             this.filling.status = false; //填充结束
         },
         save_settings: function() {
-            // 更新页面标题
-            document.title = this.settings.form.page_title;
+            document.title = this.settings.form.page_title; // 更新页面标题
             this.settings.page_title = this.settings.form.page_title;
+            this.refresh_logo();
+            this.settings.rolling_interval = this.settings.form.rolling_interval;
             this.settings.visible = false;
         },
         restart: function () {
@@ -126,6 +167,11 @@ var app = new Vue({
             this.winners = [];
             this.rolling.reminder = [];
             this.rolling.content = '点击下方按钮抽奖';
+        },
+        /* 切换设置中的 logo 分栏 */
+        _switch_settings_logo_tab: function(tab) {
+            this.settings.form.logo_tab = tab;
+            console.log(this.settings.form.logo_tab)
         },
     },
     computed: {
