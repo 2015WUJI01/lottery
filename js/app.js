@@ -13,7 +13,7 @@ var app = new Vue({
             ],
         },
         settings: { // 设置相关
-            page_title: '梭翱抽奖系统', // 页面标题，
+            page_title: '梭翱 2023 年会抽奖系统', // 页面标题，
             visible: false, // 设置面板默认隐藏
             logo_show: true, // logo 默认显示
             logo_path: '/img/soar-logo.png',
