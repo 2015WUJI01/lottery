@@ -13,10 +13,10 @@ var app = new Vue({
             ],
         },
         settings: { // 设置相关
-            page_title: 'Cubing师大抽奖系统', // 页面标题，
+            page_title: '梭翱抽奖系统', // 页面标题，
             visible: false, // 设置面板默认隐藏
             logo_show: true, // logo 默认显示
-            logo_path: 'https://avatars.githubusercontent.com/u/31869999',
+            logo_path: '/img/soar-logo.png',
             rolling_interval: 40,
             form: {
                 // form 中均为 v-model 绑定值，设置面板中的表单，保存时覆盖 settings 值

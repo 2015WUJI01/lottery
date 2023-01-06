@@ -1,2 +1,2 @@
 # lottery
-Cubing师大抽奖系统
+梭翱抽奖系统
