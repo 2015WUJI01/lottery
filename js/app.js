@@ -5,11 +5,7 @@ var app = new Vue({
             value: '', // v-model 绑定值
             placeholder: '', // 初始化时从 example 中随机获取一种
             example: [
-                "麻辣香锅\n担担面\n黄焖鸡米饭\n过桥米线\n麻辣烫\n泡面",
-                "饥荒\nKingdom Rush\n红色警戒\n魔兽争霸\n超级玛丽\n植物大战僵尸",
-                "火龙果\n香蕉\n橙子\n牛油果\n百香果\n芒果",
-                "斗地主\n麻将\n中国象棋\n五子棋\n黑白棋\n军旗",
-                "长笛\n架子鼓\n大提琴\n钢琴\n双排键\n手风琴",
+                "",
             ],
         },
         settings: { // 设置相关
